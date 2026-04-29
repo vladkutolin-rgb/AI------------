@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Генератор Презентаций — Ростелеком</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rt-purple: #5C2D91;
+            --rt-orange: #FF6B00;
+            --rt-dark: #1a1a2e;
+            --rt-light: #F8F9FE;
+            --rt-white: #FFFFFF;
+            --rt-gray: #6C757D;
+            --rt-gradient: linear-gradient(135deg, #5C2D91 0%, #FF6B00 100%);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--rt-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: var(--rt-white);
+            border-bottom: 1px solid #E8ECF1;
+            padding: 12px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            z-index: 100;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--rt-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--rt-dark);
+        }
+
+        .logo-text span {
+            color: var(--rt-purple);
+        }
+
+        .header-badge {
+            font-size: 12px;
+            color: var(--rt-gray);
+            background: #F0F2F5;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ===== ЛЕВАЯ ПАНЕЛЬ ===== */
+        .sidebar {
+            width: 400px;
+            min-width: 400px;
+            background: var(--rt-white);
+            border-right: 1px solid #E8ECF1;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--rt-dark);
+            margin-bottom: 2px;
+        }
+
+        .sidebar .hint {
+            font-size: 12px;
+            color: var(--rt-gray);
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .sidebar textarea {
+            width: 100%;
+            padding: 13px 15px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            border: 2px solid #E8ECF1;
+            border-radius: 12px;
+            resize: vertical;
+            min-height: 120px;
+            max-height: 200px;
+            transition: all 0.2s;
+            line-height: 1.5;
+        }
+
+        .sidebar textarea:focus {
+            outline: none;
+            border-color: var(--rt-purple);
+            box-shadow: 0 0 0 3px rgba(92, 45, 145, 0.06);
+        }
+
+        .sidebar textarea::placeholder {
+            color: #B0B8C1;
+        }
+
+        .file-upload-zone {
+            border: 2px dashed #DDE1E7;
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--rt-gray);
+            font-size: 13px;
+            background: #FAFBFC;
+        }
+
+        .file-upload-zone:hover {
+            border-color: var(--rt-purple);
+            background: rgba(92, 45, 145, 0.02);
+        }
+
+        .file-upload-zone .file-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.2px;
+        }
+
+        .btn-primary {
+            background: var(--rt-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(92, 45, 145, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: #F0F2F5;
+            color: var(--rt-dark);
+            margin-top: 4px;
+        }
+
+        .btn-secondary:hover {
+            background: #E4E8ED;
+        }
+
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===== ПРАВАЯ ПАНЕЛЬ — ПРЕДПРОСМОТР ===== */
+        .preview-area {
+            flex: 1;
+            background: #E8ECF1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .preview-empty-state {
+            text-align: center;
+            color: var(--rt-gray);
+        }
+
+        .preview-empty-state .big-icon {
+            font-size: 64px;
+            margin-bottom: 12px;
+            opacity: 0.7;
+        }
+
+        .preview-empty-state h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--rt-dark);
+            margin-bottom: 4px;
+        }
+
+        .preview-empty-state p {
+            font-size: 13px;
+            color: var(--rt-gray);
+        }
+
+        /* ===== КАРУСЕЛЬ СЛАЙДОВ ===== */
+        .carousel-wrapper {
+            width: 100%;
+            max-width: 960px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .carousel-viewport {
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-preview {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            position: relative;
+            transition: opacity 0.3s;
+        }
+
+        .slide-text-side {
+            flex: 1;
+            padding: 28px 24px 24px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .slide-text-side .slide-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .slide-text-side h3 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .slide-text-side .accent-bar {
+            width: 60px;
+            height: 3px;
+            border-radius: 2px;
+            margin-bottom: 16px;
+        }
+
+        .slide-text-side p {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .slide-image-side {
+            width: 44%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        .slide-image-side::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0.25), transparent);
+        }
+
+        .slide-image-placeholder {
+            width: 44%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.03);
+            font-size: 64px;
+            color: rgba(0,0,0,0.06);
+        }
+
+        .slide-page-number {
+            position: absolute;
+            bottom: 12px;
+            right: 16px;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.08);
+            color: rgba(0,0,0,0.5);
+            z-index: 2;
+        }
+
+        /* ===== КНОПКИ НАВИГАЦИИ ===== */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--rt-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: all 0.2s;
+        }
+
+        .nav-arrow:hover {
+            background: var(--rt-purple);
+            color: white;
+            box-shadow: 0 6px 20px rgba(92, 45, 145, 0.3);
+        }
+
+        .nav-arrow:disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+            background: white;
+            color: var(--rt-dark);
+        }
+
+        .nav-left { left: -21px; }
+        .nav-right { right: -21px; }
+
+        /* ===== ТОЧКИ НАВИГАЦИИ ===== */
+        .dots-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #CCD0D5;
+            cursor: pointer;
+            transition: all 0.25s;
+            border: none;
+            padding: 0;
+        }
+
+        .dot.active {
+            background: var(--rt-purple);
+            width: 28px;
+            border-radius: 6px;
+        }
+
+        .dot:hover {
+            background: var(--rt-orange);
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-weight: 600;
+            font-size: 13px;
+            z-index: 200;
+            display: none;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .toast.success {
+            display: block;
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .toast.error {
+            display: block;
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .toast.loading {
+            display: block;
+            background: rgba(92, 45, 145, 0.06);
+            color: var(--rt-purple);
+        }
+
+        /* ===== SPINNER ===== */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 900px) {
+            .main-container { flex-direction: column; }
+            .sidebar { width: 100%; min-width: 100%; max-height: 45vh; }
+            .slide-text-side h3 { font-size: 18px; }
+            .slide-text-side p { font-size: 12px; }
+            .nav-arrow { width: 32px; height: 32px; font-size: 14px; }
+            .nav-left { left: -16px; }
+            .nav-right { right: -16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">RT</div>
+            <div class="logo-text"><span>Ростелеком</span> AI · Генератор презентаций</div>
+        </div>
+        <div class="header-badge">Хакатон «Амурский Код» 2026</div>
+    </header>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main-container">
+        
+        <!-- ЛЕВАЯ ПАНЕЛЬ -->
+        <aside class="sidebar">
+            <h2>🚀 Создайте презентацию</h2>
+            <p class="hint">Опишите тему, стиль и пожелания — нейросеть сделает всё сама</p>
+
+            <textarea id="promptInput" placeholder="Пример:
+Презентация про компанию Ростелеком. 5 слайдов.
+Светлый фон, тёмный текст, фиолетовые акценты.
+Расскажи про историю, услуги, цифры, покрытие и инновации."></textarea>
+
+            <div class="file-upload-zone" onclick="document.getElementById('fileInput').click()">
+                <div class="file-icon">📎</div>
+                <div id="fileLabel">Прикрепить PDF или DOCX (необязательно)</div>
+                <input type="file" id="fileInput" accept=".pdf,.docx" style="display:none;" onchange="updateFileName(this)">
+            </div>
+
+            <button class="btn btn-primary" id="generateBtn" onclick="generatePresentation()">
+                ✨ Сгенерировать презентацию
+            </button>
+
+            <button class="btn btn-secondary" id="downloadBtn" onclick="downloadPresentation()" style="display:none;">
+                📥 Скачать PPTX
+            </button>
+        </aside>
+
+        <!-- ПРАВАЯ ПАНЕЛЬ — ПРЕДПРОСМОТР -->
+        <main class="preview-area" id="previewArea">
+            
+            <!-- Пустое состояние -->
+            <div class="preview-empty-state" id="emptyState">
+                <div class="big-icon">📄</div>
+                <h3>Здесь появится предпросмотр</h3>
+                <p>Заполните описание и нажмите «Сгенерировать»</p>
+            </div>
+
+            <!-- Карусель -->
+            <div class="carousel-wrapper" id="carouselWrapper" style="display:none;">
+                <div class="carousel-viewport">
+                    <button class="nav-arrow nav-left" id="prevBtn" onclick="goToSlide(currentIndex - 1)">◂</button>
+                    
+                    <div class="slide-preview" id="slidePreview">
+                        <!-- Заполняется JS -->
+                    </div>
+
+                    <button class="nav-arrow nav-right" id="nextBtn" onclick="goToSlide(currentIndex + 1)">▸</button>
+                </div>
+                <div class="dots-row" id="dotsRow"></div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script>
+        // ===== СОСТОЯНИЕ =====
+        let slidesData = [];
+        let currentIndex = 0;
+        let cachedId = null;
+
+        // ===== DOM-ЭЛЕМЕНТЫ =====
+        const promptInput = document.getElementById('promptInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const emptyState = document.getElementById('emptyState');
+        const carouselWrapper = document.getElementById('carouselWrapper');
+        const slidePreview = document.getElementById('slidePreview');
+        const dotsRow = document.getElementById('dotsRow');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const toast = document.getElementById('toast');
+        const fileLabel = document.getElementById('fileLabel');
+        const fileInput = document.getElementById('fileInput');
+
+        // ===== УТИЛИТЫ =====
+        function showToast(message, type) {
+            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => { toast.className = 'toast'; }, 4000);
+        }
+
+        function updateFileName(input) {
+            const name = input.files[0]?.name;
+            fileLabel.textContent = name ? '📎 ' + name : '📎 Прикрепить PDF или DOCX (необязательно)';
+        }
+
+        function setLoading(loading) {
+            generateBtn.disabled = loading;
+            generateBtn.innerHTML = loading 
+                ? '<span class="spinner"></span> Генерирую...' 
+                : '✨ Сгенерировать презентацию';
+        }
+
+        // ===== ГЕНЕРАЦИЯ =====
+        async function generatePresentation() {
+            const prompt = promptInput.value.trim();
+            if (!prompt) {
+                showToast('Пожалуйста, опишите презентацию', 'error');
+                return;
+            }
+
+            setLoading(true);
+            showToast('Нейросеть создаёт презентацию...', 'loading');
+
+            const formData = new FormData();
+            formData.append('prompt', prompt);
+            if (fileInput.files.length > 0) {
+                formData.append('file', fileInput.files[0]);
+            }
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Ошибка сервера');
+                }
+
+                const data = await response.json();
+                slidesData = data.slides || [];
+                cachedId = data.cache_id || null;
+                currentIndex = 0;
+
+                if (slidesData.length === 0) {
+                    throw new Error('Не удалось создать слайды');
+                }
+
+                renderAllSlides();
+                downloadBtn.style.display = 'block';
+                showToast('✅ Презентация готова! Просмотрите и скачайте.', 'success');
+
+            } catch (error) {
+                console.error(error);
+                showToast('❌ Ошибка: ' + error.message, 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // ===== ОТРИСОВКА =====
+        function renderAllSlides() {
+            // Показываем карусель
+            emptyState.style.display = 'none';
+            carouselWrapper.style.display = 'flex';
+
+            // Рендерим текущий слайд
+            renderCurrentSlide();
+
+            // Рендерим точки навигации
+            renderDots();
+        }
+
+        function renderCurrentSlide() {
+            if (slidesData.length === 0) return;
+
+            const slide = slidesData[currentIndex];
+            const accent = slide.accent_color || '#5C2D91';
+            const bg1 = slide.bg_color1 || '#F5F5F7';
+            const bg2 = slide.bg_color2 || '#FFFFFF';
+            const title = slide.title || 'Слайд ' + (currentIndex + 1);
+            const content = slide.content || '';
+            const imageUrl = slide.image_url;
+
+            // Фон слайда
+            slidePreview.style.background = `linear-gradient(135deg, ${bg1}, ${bg2})`;
+
+            // Текстовая часть
+            let imageHTML = '';
+            if (imageUrl) {
+                imageHTML = `<div class="slide-image-side" style="background-image:url(${imageUrl})"></div>`;
+            } else {
+                imageHTML = `<div class="slide-image-placeholder">🖼️</div>`;
+            }
+
+            slidePreview.innerHTML = `
+                <div class="slide-text-side">
+                    <div class="slide-label" style="color:${accent}">Слайд ${currentIndex + 1} из ${slidesData.length}</div>
+                    <h3 style="color:${accent}">${title}</h3>
+                    <div class="accent-bar" style="background:${accent}"></div>
+                    <p style="color:#3A3A4A">${content}</p>
+                </div>
+                ${imageHTML}
+                <div class="slide-page-number">${currentIndex + 1} / ${slidesData.length}</div>
+            `;
+
+            // Обновляем стрелки
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === slidesData.length - 1;
+            prevBtn.style.opacity = currentIndex === 0 ? '0.25' : '1';
+            nextBtn.style.opacity = currentIndex === slidesData.length - 1 ? '0.25' : '1';
+
+            // Обновляем точки
+            updateDots();
+        }
+
+        function renderDots() {
+            dotsRow.innerHTML = '';
+            for (let i = 0; i < slidesData.length; i++) {
+                const dot = document.createElement('button');
+                dot.className = 'dot' + (i === currentIndex ? ' active' : '');
+                dot.onclick = () => goToSlide(i);
+                dot.setAttribute('aria-label', 'Слайд ' + (i + 1));
+                dotsRow.appendChild(dot);
+            }
+        }
+
+        function updateDots() {
+            const dots = dotsRow.querySelectorAll('.dot');
+            dots.forEach((dot, i) => {
+                dot.className = 'dot' + (i === currentIndex ? ' active' : '');
+            });
+        }
+
+        // ===== НАВИГАЦИЯ =====
+        function goToSlide(index) {
+            if (index < 0 || index >= slidesData.length) return;
+            currentIndex = index;
+            renderCurrentSlide();
+        }
+
+        // ===== СКАЧИВАНИЕ =====
+        async function downloadPresentation() {
+            if (!cachedId) {
+                showToast('Сначала сгенерируйте презентацию', 'error');
+                return;
+            }
+
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = '⏳ Скачиваю...';
+            showToast('Собираю PPTX файл...', 'loading');
+
+            const formData = new FormData();
+            formData.append('prompt', promptInput.value.trim());
+            formData.append('download', 'true');
+            formData.append('cache_id', cachedId);
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error('Ошибка генерации файла');
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'presentation.pptx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                showToast('📥 Презентация скачана! Откройте в PowerPoint.', 'success');
+            } catch (error) {
+                showToast('❌ Ошибка: ' + error.message, 'error');
+            } finally {
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = '📥 Скачать PPTX';
+            }
+        }
+
+        // ===== КЛАВИАТУРА =====
+        document.addEventListener('keydown', (e) => {
+            if (slidesData.length === 0) return;
+            if (e.key === 'ArrowLeft') goToSlide(currentIndex - 1);
+            if (e.key === 'ArrowRight') goToSlide(currentIndex + 1);
+        });
+
+        // ===== СВАЙП НА ТЕЛЕФОНЕ =====
+        let touchStartX = 0;
+        slidePreview.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+        slidePreview.addEventListener('touchend', (e) => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) {
+                goToSlide(currentIndex + (diff > 0 ? 1 : -1));
+            }
+        });
+    </script>
+
+</body>
+</html>
